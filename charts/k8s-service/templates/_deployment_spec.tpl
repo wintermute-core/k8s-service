@@ -28,6 +28,9 @@ We need this because certain sections are omitted if there are no volumes or env
 {{- if .Values.additionalContainerEnv -}}
   {{- $_ := set $hasInjectionTypes "hasEnvVars" true -}}
 {{- end -}}
+{{- if gt (len .Values.hostPaths) 0 -}}
+  {{- $_ := set $hasInjectionTypes "hasVolume" true -}}
+{{- end -}}
 {{- $allContainerPorts := values .Values.containerPorts -}}
 {{- range $allContainerPorts -}}
   {{/* We are exposing ports if there is at least one key in containerPorts that is not disabled (disabled = false or
@@ -326,6 +329,17 @@ spec:
           {{- if index $hasInjectionTypes "hasVolume" }}
           volumeMounts:
           {{- end }}
+          {{/* Existing volume mount configurations */}}
+          {{- range $name, $value := .Values.hostPaths }}
+            - name: {{ $name }}
+              mountPath: {{ quote $value.mountPath }}
+              {{- if $value.subPath }}
+              subPath: {{ quote $value.subPath }}
+              {{- end }}
+              {{- if $value.readOnly }}
+              readOnly: {{ $value.readOnly }}
+              {{- end }}
+          {{- end }}
           {{- range $name, $value := .Values.configMaps }}
             {{- if eq $value.as "volume" }}
             - name: {{ $name }}-volume
@@ -391,6 +405,14 @@ spec:
     {{- /* START VOLUME LOGIC */ -}}
     {{- if index $hasInjectionTypes "hasVolume" }}
       volumes:
+    {{- end }}
+    {{- range $name, $value := .Values.hostPaths }}
+        - name: {{ $name }}
+          hostPath:
+            path: {{ required "path is required for hostPath volumes" $value.path }}
+            {{- if $value.type }}
+            type: {{ $value.type }}
+            {{- end }}
     {{- end }}
     {{- range $name, $value := .Values.configMaps }}
       {{- if eq $value.as "volume" }}
