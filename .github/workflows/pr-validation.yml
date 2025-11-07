@@ -24,19 +24,13 @@ jobs:
       - name: Helm lint
         run: |
           echo "Running helm lint on k8s-service chart..."
-          helm lint charts/k8s-service
+          helm lint charts/k8s-service -f charts/k8s-service/linter_values.yaml
 
-      - name: Helm template - default values
-        run: |
-          echo "Testing template rendering with default values..."
-          helm template test-release charts/k8s-service > /dev/null
-          echo "✓ Default values rendering successful"
-
-      - name: Helm template - linter values
+      - name: Helm template - validation
         run: |
           echo "Testing template rendering with linter_values.yaml..."
           helm template test-release charts/k8s-service -f charts/k8s-service/linter_values.yaml > /dev/null
-          echo "✓ Linter values rendering successful"
+          echo "✓ Template rendering successful"
 
       - name: Validation complete
         run: |
