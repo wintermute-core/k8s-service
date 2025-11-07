@@ -1,0 +1,37 @@
+name: PR Validation
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'charts/**'
+      - '.github/workflows/pr-validation.yml'
+
+jobs:
+  validate-helm-chart:
+    name: Validate Helm Chart
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: 'v3.8.0'
+
+      - name: Helm lint
+        run: |
+          echo "Running helm lint on k8s-service chart..."
+          helm lint charts/k8s-service -f charts/k8s-service/linter_values.yaml
+
+      - name: Helm template - validation
+        run: |
+          echo "Testing template rendering with linter_values.yaml..."
+          helm template test-release charts/k8s-service -f charts/k8s-service/linter_values.yaml > /dev/null
+          echo "✓ Template rendering successful"
+
+      - name: Validation complete
+        run: |
+          echo "✓ All Helm chart validations passed successfully"
