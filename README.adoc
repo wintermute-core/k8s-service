@@ -10,6 +10,8 @@ Helm chart for deploying applications on Kubernetes with support for:
 * Ingress and service endpoints
 * Canary deployments
 
+Based on https://github.com/gruntwork-io/helm-kubernetes-services[gruntwork-io/helm-kubernetes-services] repository.
+
 See link:/charts/k8s-service/README.md[chart documentation] for usage details.
 
 == License
