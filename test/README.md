@@ -20,6 +20,19 @@ This folder contains the "template tests" and "integration tests". Both types of
 [Terratest](https://github.com/gruntwork-io/terratest). While "template tests" do not need any infrastructure, the
 "integration tests" deploy the charts to a Kubernetes cluster.
 
+## CI/CD Testing Strategy
+
+**Note**: As of the GitHub Actions migration, these comprehensive Go tests are **not automatically run in CI/CD pipelines**.
+The CI uses lightweight `helm lint` and `helm template` validation for fast PR feedback (~1-2 minutes).
+
+These tests are preserved for:
+- Local development and thorough validation
+- Manual testing before major releases
+- Deep debugging of chart behavior
+- Ensuring compatibility across Kubernetes versions
+
+For automated CI validation, see `.github/workflows/pr-validation.yml` and `.github/workflows/release.yml`.
+
 
 
 ## WARNING WARNING WARNING

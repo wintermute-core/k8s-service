@@ -102,10 +102,9 @@ Now write your code, and every time you commit, `helm lint` will be run on the c
 to include the following:
 
 1. A description of the change, including a link to your GitHub issue.
-1. The output of your automated test run, preferably in a [GitHub Gist](https://gist.github.com/). We cannot run
-   automated tests for pull requests automatically due to [security
-   concerns](https://circleci.com/docs/fork-pr-builds/#security-implications), so we need you to manually provide this
-   test output so we can verify that everything is working.
+1. Automated validation (`helm lint` and `helm template`) will run automatically via GitHub Actions on your PR.
+   If you've also run the comprehensive Go-based tests locally (see `test/README.md`), please include the output
+   in a [GitHub Gist](https://gist.github.com/) to help with review.
 1. Any notes on backwards incompatibility or downtime.
 
 

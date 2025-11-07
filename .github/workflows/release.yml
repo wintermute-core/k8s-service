@@ -1,0 +1,79 @@
+name: Release Helm Chart
+
+on:
+  release:
+    types: [created]
+
+permissions:
+  contents: write
+
+jobs:
+  package-and-release:
+    name: Package and Release Chart
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: 'v3.8.0'
+
+      - name: Extract version from tag
+        id: version
+        run: |
+          TAG="${{ github.event.release.tag_name }}"
+          VERSION="${TAG#v}"
+          echo "tag=${TAG}" >> $GITHUB_OUTPUT
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "Extracted version: ${VERSION} from tag: ${TAG}"
+
+      - name: Update Chart version
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          sed -i "s/version: 0.0.1-replace/version: ${VERSION}/" charts/k8s-service/Chart.yaml
+          echo "Updated Chart.yaml version to ${VERSION}"
+          grep "^version:" charts/k8s-service/Chart.yaml
+
+      - name: Create assets directory
+        run: mkdir -p assets
+
+      - name: Package Helm chart
+        run: |
+          helm package charts/k8s-service -d assets/
+          echo "Chart packaged:"
+          ls -lh assets/
+
+      - name: Generate Helm repo index
+        run: |
+          REPO_URL="https://github.com/${{ github.repository }}/releases/download/${{ steps.version.outputs.tag }}"
+          helm repo index assets/ --url "${REPO_URL}"
+          echo "Generated index.yaml with URL: ${REPO_URL}"
+
+      - name: Upload chart package to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./assets/k8s-service-${{ steps.version.outputs.version }}.tgz
+          asset_name: k8s-service-${{ steps.version.outputs.version }}.tgz
+          asset_content_type: application/gzip
+
+      - name: Upload index to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./assets/index.yaml
+          asset_name: index.yaml
+          asset_content_type: text/yaml
+
+      - name: Release complete
+        run: |
+          echo "✓ Helm chart v${{ steps.version.outputs.version }} packaged and released successfully"
+          echo "Chart: k8s-service-${{ steps.version.outputs.version }}.tgz"
+          echo "Index: index.yaml"
