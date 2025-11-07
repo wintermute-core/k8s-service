@@ -594,19 +594,15 @@ persistentVolumes: {}
 #   example: /mnt/scratch
 scratchPaths: {}
 
+# hostPaths is a map of key value pairs that specifies which paths in the container should be setup as hostPaths.
+# Example:
 #hostPaths:
-#  docker-socket:
-#    path: /var/run/docker.sock
-#    mountPath: /var/run/docker.sock
-#    type: Socket
-#    readOnly: true
-#  var-log:
-#    path: /var/log
-#    mountPath: /host/var/log
-#    type: Directory
-#    subPath: nginx
+#  "download":
+#    path: /tmp/download
+#    type: DirectoryOrCreate
 
 hostPaths: {}
+
 
 # emptyDirs is a map of key value pairs that specifies which paths in the container should be setup as an emptyDir volume.
 # Under the hood each entry in the map is converted to a volume stored on whatever medium that backs the node
