@@ -8,6 +8,7 @@ This directory contains test value files for validating chart behavior.
 
 - `duplicate-mountpath.yaml` - Tests that duplicate `mountPath` values are detected and rejected
 - `duplicate-hostpath.yaml` - Tests that duplicate host `path` values are detected and rejected
+- `missing-mountpath.yaml` - Tests that missing required `mountPath` field is detected and rejected
 
 ### Positive Tests (Should Pass)
 
@@ -15,13 +16,16 @@ This directory contains test value files for validating chart behavior.
 
 ## Running Tests Locally
 
-### Test that duplicates are rejected:
+### Test that validation catches errors:
 ```bash
 # Should fail with error about duplicate mountPath
 helm template test charts/k8s-service -f charts/k8s-service/tests/duplicate-mountpath.yaml
 
 # Should fail with error about duplicate host path
 helm template test charts/k8s-service -f charts/k8s-service/tests/duplicate-hostpath.yaml
+
+# Should fail with error about required mountPath
+helm template test charts/k8s-service -f charts/k8s-service/tests/missing-mountpath.yaml
 ```
 
 ### Test that valid config works:

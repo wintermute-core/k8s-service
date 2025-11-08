@@ -1,0 +1,12 @@
+# Test: Missing mountPath should fail validation
+# This test should FAIL with error about required mountPath
+
+applicationName: test-missing-mountpath
+containerImage:
+  repository: nginx
+  tag: stable
+
+hostPaths:
+  data:
+    path: /host/data
+    # mountPath is missing - should fail!

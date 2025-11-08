@@ -473,12 +473,6 @@ spec:
         - name: {{ $name }}
           emptyDir: {}
     {{- end }}
-    {{- range $name, $value := .Values.hostPaths }}
-        - name: {{ $name }}
-          hostPath:
-            path: {{ $value.path }}
-            type: {{ $value.type }}
-    {{- end }}
     {{- /* END VOLUME LOGIC */ -}}
 
     {{- with .Values.nodeSelector }}

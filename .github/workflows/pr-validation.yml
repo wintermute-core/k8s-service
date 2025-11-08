@@ -55,6 +55,16 @@ jobs:
             exit 1
           fi
 
+      - name: Test missing mountPath detection
+        run: |
+          echo "Testing missing mountPath detection..."
+          if helm template test charts/k8s-service -f charts/k8s-service/tests/missing-mountpath.yaml 2>&1 | grep -q "mountPath.*required"; then
+            echo "✓ Missing mountPath correctly detected and rejected"
+          else
+            echo "✗ FAIL: Missing mountPath was not detected"
+            exit 1
+          fi
+
       - name: Validation complete
         run: |
           echo "✓ All Helm chart validations passed successfully"
@@ -63,3 +73,4 @@ jobs:
           echo "  - Valid hostPaths test passed"
           echo "  - Duplicate mountPath detection passed"
           echo "  - Duplicate host path detection passed"
+          echo "  - Missing mountPath detection passed"
