@@ -1,0 +1,15 @@
+# Test: Duplicate mountPath should fail validation
+# This test should FAIL with error about duplicate mountPath
+
+applicationName: test-duplicate-mountpath
+containerImage:
+  repository: nginx
+  tag: stable
+
+hostPaths:
+  data1:
+    path: /host/path1
+    mountPath: /data
+  data2:
+    path: /host/path2
+    mountPath: /data

@@ -1,0 +1,21 @@
+# Test: Valid unique hostPaths should pass validation
+# This test should PASS
+
+applicationName: test-valid-hostpaths
+containerImage:
+  repository: nginx
+  tag: stable
+
+hostPaths:
+  data:
+    path: /host/data
+    mountPath: /data
+  logs:
+    path: /host/logs
+    mountPath: /logs
+    type: DirectoryOrCreate
+  downloads:
+    path: /host/downloads
+    mountPath: /downloads
+    readOnly: true
+    type: Directory

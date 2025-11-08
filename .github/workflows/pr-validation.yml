@@ -3,9 +3,6 @@ name: PR Validation
 on:
   pull_request:
     types: [opened, synchronize, reopened]
-    paths:
-      - 'charts/**'
-      - '.github/workflows/pr-validation.yml'
 
 jobs:
   validate-helm-chart:
@@ -32,6 +29,37 @@ jobs:
           helm template test-release charts/k8s-service -f charts/k8s-service/linter_values.yaml > /dev/null
           echo "✓ Template rendering successful"
 
+      - name: Test valid hostPaths configuration
+        run: |
+          echo "Testing valid hostPaths configuration..."
+          helm template test charts/k8s-service -f charts/k8s-service/tests/valid-hostpaths.yaml > /dev/null
+          echo "✓ Valid hostPaths test passed"
+
+      - name: Test duplicate mountPath detection
+        run: |
+          echo "Testing duplicate mountPath detection..."
+          if helm template test charts/k8s-service -f charts/k8s-service/tests/duplicate-mountpath.yaml 2>&1 | grep -q "Duplicate mountPath"; then
+            echo "✓ Duplicate mountPath correctly detected and rejected"
+          else
+            echo "✗ FAIL: Duplicate mountPath was not detected"
+            exit 1
+          fi
+
+      - name: Test duplicate host path detection
+        run: |
+          echo "Testing duplicate host path detection..."
+          if helm template test charts/k8s-service -f charts/k8s-service/tests/duplicate-hostpath.yaml 2>&1 | grep -q "Duplicate host path"; then
+            echo "✓ Duplicate host path correctly detected and rejected"
+          else
+            echo "✗ FAIL: Duplicate host path was not detected"
+            exit 1
+          fi
+
       - name: Validation complete
         run: |
           echo "✓ All Helm chart validations passed successfully"
+          echo "  - Helm lint passed"
+          echo "  - Template rendering passed"
+          echo "  - Valid hostPaths test passed"
+          echo "  - Duplicate mountPath detection passed"
+          echo "  - Duplicate host path detection passed"

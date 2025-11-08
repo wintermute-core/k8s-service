@@ -595,11 +595,15 @@ persistentVolumes: {}
 scratchPaths: {}
 
 # hostPaths is a map of key value pairs that specifies which paths in the container should be setup as hostPaths.
+# WARNING: Duplicate 'path' or 'mountPath' values will cause validation errors.
 # Example:
 #hostPaths:
 #  "download":
-#    path: /tmp/download
-#    type: DirectoryOrCreate
+#    path: /tmp/download           # Path on the host node (required)
+#    mountPath: /downloads          # Path in the container (required)
+#    type: DirectoryOrCreate        # Optional: hostPath type
+#    readOnly: false                # Optional: mount as read-only
+#    subPath: ""                    # Optional: subPath within the volume
 
 hostPaths: {}
 

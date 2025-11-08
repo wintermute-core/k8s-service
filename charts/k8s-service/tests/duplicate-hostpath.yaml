@@ -1,0 +1,15 @@
+# Test: Duplicate host path should fail validation
+# This test should FAIL with error about duplicate host path
+
+applicationName: test-duplicate-hostpath
+containerImage:
+  repository: nginx
+  tag: stable
+
+hostPaths:
+  data1:
+    path: /k8s-data/shared
+    mountPath: /data1
+  data2:
+    path: /k8s-data/shared
+    mountPath: /data2
