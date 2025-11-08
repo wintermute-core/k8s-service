@@ -9,6 +9,8 @@ You can construct this context using dict:
 (dict "Values" .Values "Release" .Release "Chart" .Chart "isCanary" true)
 */ -}}
 {{- define "k8s-service.deploymentSpec" -}}
+{{- /* Validate hostPaths for duplicates */ -}}
+{{- include "k8s-service.validateHostPaths" . -}}
 {{- /*
 We must decide whether or not there are volumes to inject. The logic to decide whether or not to inject is based on
 whether or not there are configMaps OR secrets that are specified as volume mounts (`as: volume` attributes). We do this

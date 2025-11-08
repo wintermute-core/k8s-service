@@ -71,3 +71,25 @@ However, due to yaml/json limitations, all the Kubernetes resources require file
   {{- end -}}
   {{- "res" | index $accumulator | toString | printf -}}
 {{- end -}}
+
+{{/*
+Validate hostPaths for duplicate mount paths and host paths.
+*/}}
+{{- define "k8s-service.validateHostPaths" -}}
+  {{- $mountPaths := dict -}}
+  {{- $hostPaths := dict -}}
+  {{- range $name, $value := .Values.hostPaths -}}
+    {{- if $value.mountPath -}}
+      {{- if hasKey $mountPaths $value.mountPath -}}
+        {{- fail (printf "Duplicate mountPath '%s' found in hostPaths: both '%s' and '%s' use the same mountPath" $value.mountPath (index $mountPaths $value.mountPath) $name) -}}
+      {{- end -}}
+      {{- $_ := set $mountPaths $value.mountPath $name -}}
+    {{- end -}}
+    {{- if $value.path -}}
+      {{- if hasKey $hostPaths $value.path -}}
+        {{- fail (printf "Duplicate host path '%s' found in hostPaths: both '%s' and '%s' use the same path" $value.path (index $hostPaths $value.path) $name) -}}
+      {{- end -}}
+      {{- $_ := set $hostPaths $value.path $name -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
